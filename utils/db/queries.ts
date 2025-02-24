@@ -149,3 +149,43 @@ export async function getConferenceSpeakers(conferenceId: number) {
     return null;
   }
 }
+
+
+export async function searchConferences(term: string, page: number, limit: number) {
+  const supabase = await createClient();
+
+  try {
+  
+    if (!term) {
+      // if no search term is provided, return all conferences
+      const { data, error } = await supabase
+        .from("conferences")
+        .select("*")
+        .limit(limit)
+        .range((page - 1) * limit, page * limit);
+
+      if (error) {
+        throw error;
+      }
+
+      return data;
+    }
+
+
+    // search for conferences with the given term
+    const { data, error } = await supabase
+      .from("conferences")
+      .select("*")
+      .textSearch("title", term).limit(limit).range((page - 1) * limit, page * limit);
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error(error);
+
+    return null;
+  }
+}
