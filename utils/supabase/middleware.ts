@@ -1,5 +1,16 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
+import { Database } from "../types";
+import { NextURL } from "next/dist/server/web/next-url";
+
+// get a list of a ll the protected routes
+const protectedRoutes = ["/protected", 'profile', 'settings'];
+
+// a function to check if a route is protected
+const isProtectedRoute = (url: NextURL) => {
+  return protectedRoutes.some(route => url.pathname.startsWith(`/${route}`));
+}
+
 
 export const updateSession = async (request: NextRequest) => {
   // This `try/catch` block is only here for the interactive tutorial.
@@ -12,7 +23,7 @@ export const updateSession = async (request: NextRequest) => {
       },
     });
 
-    const supabase = createServerClient(
+    const supabase = createServerClient<Database>(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
@@ -40,12 +51,12 @@ export const updateSession = async (request: NextRequest) => {
     const user = await supabase.auth.getUser();
 
     // protected routes
-    if (request.nextUrl.pathname.startsWith("/protected") && user.error) {
+    if(isProtectedRoute(request.nextUrl) && user.error) {
       return NextResponse.redirect(new URL("/sign-in", request.url));
     }
 
     if (request.nextUrl.pathname === "/" && !user.error) {
-      return NextResponse.redirect(new URL("/protected", request.url));
+      return NextResponse.redirect(new URL("/profile", request.url));
     }
 
     return response;
