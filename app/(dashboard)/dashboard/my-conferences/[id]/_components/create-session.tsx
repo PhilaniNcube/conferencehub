@@ -64,8 +64,7 @@ const CreateSession = ({
   conference_id: number;
   speakers?: Speaker[];
 }) => {
-  const params = useParams();
-  const conferenceId = parseInt(params.id as string);
+
   const [open, setOpen] = useState(false);
 
   const [state, formAction, isPending] = useActionState(
