@@ -189,3 +189,26 @@ export async function searchConferences(term: string, page: number, limit: numbe
     return null;
   }
 }
+
+
+export async function getConferenceSessions(conferenceId: number) {
+  const supabase = await createClient();
+
+  try {
+    // get all sessions for the given conference
+    const { data, error } = await supabase
+      .from("sessions")
+      .select("*")
+      .eq("conference_id", conferenceId);
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error(error);
+
+    return null;
+  }
+}

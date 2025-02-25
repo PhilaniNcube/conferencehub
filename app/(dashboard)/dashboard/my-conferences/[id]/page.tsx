@@ -1,8 +1,11 @@
-import { getConference } from "@/utils/db/queries";
+import { getConference, getConferenceSessions, getConferenceSpeakers } from "@/utils/db/queries";
 import React from "react";
 import { ConferenceDetails } from "./_components/conference-details";
 import AddSpeakerDialog from "./_components/add-speaker";
 import ConferenceSpeakers from "./_components/conference-speakers";
+import CreateSession from "./_components/create-session";
+import { Separator } from "@radix-ui/react-dropdown-menu";
+import ListConferenceSessions from "./_components/list-conference-sessions";
 
 const ConferencePage = async ({
   params,
@@ -13,9 +16,15 @@ const ConferencePage = async ({
 
   const conference = await getConference(id);
 
+  
+
   if (!conference) {
     return <div>Conference not found</div>;
   }
+
+  let speakers = await getConferenceSpeakers(id);
+
+
 
   return (
     <div className="container">
@@ -27,6 +36,10 @@ const ConferencePage = async ({
           <div className="mt-6 max-w-xl w-full">
             <ConferenceSpeakers conference_id={conference.id} />
           </div>
+          <Separator className="my-3" />
+          <CreateSession conference_id={conference.id} speakers={speakers || []} />
+          <Separator className="my-3" />
+          <ListConferenceSessions conference_id={conference.id} />
         </div>
       </div>
     </div>
