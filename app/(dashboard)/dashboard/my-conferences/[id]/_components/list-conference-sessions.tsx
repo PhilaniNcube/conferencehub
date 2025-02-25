@@ -39,7 +39,7 @@ const ListConferenceSessions = async ({
         <h2 className="text-2xl font-bold">Sessions</h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4">
         {conferenceSessions.map((session) => (
           <Card key={session.id} className="overflow-hidden">
             <CardHeader className="pb-2">
