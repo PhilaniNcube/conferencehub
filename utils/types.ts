@@ -130,10 +130,11 @@ export type Database = {
         Row: {
           conference_id: number
           created_at: string | null
-          description: string | null
+          description: string
           end_time: string
           id: number
-          speaker_id: string | null
+          session_date: string
+          speaker_id: string
           start_time: string
           title: string
           updated_at: string | null
@@ -141,10 +142,11 @@ export type Database = {
         Insert: {
           conference_id: number
           created_at?: string | null
-          description?: string | null
+          description: string
           end_time: string
           id?: never
-          speaker_id?: string | null
+          session_date: string
+          speaker_id: string
           start_time: string
           title: string
           updated_at?: string | null
@@ -152,10 +154,11 @@ export type Database = {
         Update: {
           conference_id?: number
           created_at?: string | null
-          description?: string | null
+          description?: string
           end_time?: string
           id?: never
-          speaker_id?: string | null
+          session_date?: string
+          speaker_id?: string
           start_time?: string
           title?: string
           updated_at?: string | null

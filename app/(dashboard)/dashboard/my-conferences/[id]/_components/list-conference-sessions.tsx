@@ -13,7 +13,13 @@ import { CalendarIcon, Clock, MapPin, Users } from "lucide-react";
 
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { differenceInHours, differenceInMinutes, format, formatDate, subHours } from "date-fns";
+import {
+  differenceInHours,
+  differenceInMinutes,
+  format,
+  formatDate,
+  subHours,
+} from "date-fns";
 
 const ListConferenceSessions = async ({
   conference_id,
@@ -49,20 +55,23 @@ const ListConferenceSessions = async ({
                   {/* Calculate the session duration */}
 
                   {session.start_time && session.end_time && (
-                    <>
-                      {differenceInMinutes(
-                        new Date(session.end_time),
-                        new Date(session.start_time)
-                      )}{" "}
-                      minutes
-                    </>
+                    <div className="block">
+                      {session.start_time} - {session.end_time}
+                    </div>
                   )}
-                </div>
+                </div>{" "}
+                <small>
+                  {differenceInHours(
+                    new Date(session.session_date + " " + session.end_time),
+                    new Date(session.session_date + " " + session.start_time)
+                  )}{" "}
+                  hours
+                </small>
               </div>
               <CardTitle className="line-clamp-2">{session.title}</CardTitle>
               <CardDescription className="flex items-center text-xs">
                 <CalendarIcon className="h-3 w-3 mr-1 text-black" />
-               Start Time {format(session.start_time, 'dd/mm/yyyy h:mm a') || "Date TBD"}
+                Start Time {session.start_time}
               </CardDescription>
             </CardHeader>
 

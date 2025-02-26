@@ -35,26 +35,34 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useActionState, useState } from "react";
-import { Conference, Speaker } from "@/utils/db/schema";
-import { CirclePlus } from "lucide-react";
+import { Conference, sessionCreateSchema, Speaker } from "@/utils/db/schema";
+import { CalendarIcon, CirclePlus } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { format, formatDate } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
 
-// Define Zod schema for form validation
-const sessionSchema = z.object({
-  title: z
-    .string()
-    .min(3, { message: "Title must be at least 3 characters long" }),
-  description: z.string().optional(),
-  start_time: z.string().refine((val) => !isNaN(Date.parse(val)), {
-    message: "Start time must be a valid date and time",
-  }),
-  end_time: z.string().refine((val) => !isNaN(Date.parse(val)), {
-    message: "End time must be a valid date and time",
-  }),
-  speaker_id: z.string().optional(),
-  conference_id: z.coerce.number(),
-});
+type SessionFormValues = z.infer<typeof sessionCreateSchema>;
 
-type SessionFormValues = z.infer<typeof sessionSchema>;
+const isDateInRange = (
+  date: Date,
+  startDate: string,
+  endDate: string
+): boolean => {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  // Normalize all dates to midnight for fair comparison
+  const normalizedDate = new Date(date.setHours(0, 0, 0, 0));
+  const normalizedStart = new Date(start.setHours(0, 0, 0, 0));
+  const normalizedEnd = new Date(end.setHours(0, 0, 0, 0));
+
+  return normalizedDate >= normalizedStart && normalizedDate <= normalizedEnd;
+};
 
 const CreateSession = ({
   speakers = [],
@@ -63,7 +71,6 @@ const CreateSession = ({
   conference: Conference;
   speakers?: Speaker[];
 }) => {
-
   const [open, setOpen] = useState(false);
 
   const [state, formAction, isPending] = useActionState(
@@ -73,12 +80,11 @@ const CreateSession = ({
 
   // Define form
   const form = useForm<SessionFormValues>({
-    resolver: zodResolver(sessionSchema),
+    resolver: zodResolver(sessionCreateSchema),
     defaultValues: {
       title: "",
       description: "",
-      start_time: "",
-      end_time: "",
+      session_date: conference.start_date,
       speaker_id: "",
       conference_id: conference.id,
     },
@@ -102,7 +108,13 @@ const CreateSession = ({
         </DialogHeader>
 
         <Form {...form}>
-          <form action={formAction} className="space-y-4">
+          <form
+            action={(formData: FormData) => {
+              console.log(form.getValues());
+              formAction(formData);
+            }}
+            className="space-y-4"
+          >
             <FormField
               control={form.control}
               name="conference_id"
@@ -148,31 +160,84 @@ const CreateSession = ({
               )}
             />
 
+            <div className="grid grid-cols-2 gap-6">
+              <FormField
+                control={form.control}
+                name="start_time"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Start Time</FormLabel>
+                    <FormControl>
+                      <Input type="time" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/*   */}
+              <FormField
+                control={form.control}
+                name="end_time"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>End Time</FormLabel>
+                    <FormControl>
+                      <Input type="time" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
             <FormField
               control={form.control}
-              name="start_time"
+              name="session_date"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Start Time</FormLabel>
-                  <FormControl>
-                    <Input  type="datetime-local" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="end_time"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>End Time</FormLabel>
-                  <FormControl>
-                    <Input type="datetime-local" {...field} />
-                  </FormControl>
+                <FormItem className="flex flex-col">
+                  <FormLabel>Session Date</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <div>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className={cn(
+                              "w-full pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                          <Input type="hidden" {...field} />
+                        </div>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={
+                          field.value ? new Date(field.value) : undefined
+                        }
+                        onSelect={field.onChange}
+                        month={field.value ? new Date(field.value) : new Date()}
+                        disabled={(date) =>
+                          !isDateInRange(
+                            date,
+                            conference.start_date,
+                            conference.end_date
+                          )
+                        }
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                   <FormMessage />
                 </FormItem>
               )}
@@ -186,6 +251,7 @@ const CreateSession = ({
                   <FormItem>
                     <FormLabel>Speaker</FormLabel>
                     <Select
+                      name="speaker_id"
                       onValueChange={field.onChange}
                       value={field.value || ""}
                     >
