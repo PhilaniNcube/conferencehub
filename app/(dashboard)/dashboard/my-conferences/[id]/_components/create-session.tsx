@@ -3,7 +3,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useParams } from "next/navigation";
 import { createConferenceSession } from "@/utils/db/actions/sessions";
 
 // Import shadcn components
@@ -36,7 +35,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useActionState, useState } from "react";
-import { Speaker } from "@/utils/db/schema";
+import { Conference, Speaker } from "@/utils/db/schema";
 import { CirclePlus } from "lucide-react";
 
 // Define Zod schema for form validation
@@ -59,9 +58,9 @@ type SessionFormValues = z.infer<typeof sessionSchema>;
 
 const CreateSession = ({
   speakers = [],
-  conference_id,
+  conference,
 }: {
-  conference_id: number;
+  conference: Conference;
   speakers?: Speaker[];
 }) => {
 
@@ -81,7 +80,7 @@ const CreateSession = ({
       start_time: "",
       end_time: "",
       speaker_id: "",
-      conference_id: conference_id,
+      conference_id: conference.id,
     },
   });
 
@@ -149,6 +148,8 @@ const CreateSession = ({
               )}
             />
 
+
+            {/*   */}
             <FormField
               control={form.control}
               name="start_time"
@@ -156,7 +157,7 @@ const CreateSession = ({
                 <FormItem>
                   <FormLabel>Start Time</FormLabel>
                   <FormControl>
-                    <Input type="datetime-local" {...field} />
+                    <Input  type="datetime-local" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
