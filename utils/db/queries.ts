@@ -150,12 +150,14 @@ export async function getConferenceSpeakers(conferenceId: number) {
   }
 }
 
-
-export async function searchConferences(term: string, page: number, limit: number) {
+export async function searchConferences(
+  term: string,
+  page: number,
+  limit: number
+) {
   const supabase = await createClient();
 
   try {
-  
     if (!term) {
       // if no search term is provided, return all conferences
       const { data, error } = await supabase
@@ -171,12 +173,13 @@ export async function searchConferences(term: string, page: number, limit: numbe
       return data;
     }
 
-
     // search for conferences with the given term
     const { data, error } = await supabase
       .from("conferences")
       .select("*")
-      .textSearch("title", term).limit(limit).range((page - 1) * limit, page * limit);
+      .textSearch("title", term)
+      .limit(limit)
+      .range((page - 1) * limit, page * limit);
 
     if (error) {
       throw error;
@@ -190,7 +193,6 @@ export async function searchConferences(term: string, page: number, limit: numbe
   }
 }
 
-
 export async function getConferenceSessions(conferenceId: number) {
   const supabase = await createClient();
 
@@ -200,6 +202,29 @@ export async function getConferenceSessions(conferenceId: number) {
       .from("sessions")
       .select("*")
       .eq("conference_id", conferenceId);
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error(error);
+
+    return null;
+  }
+}
+
+export async function getSpeaker(speakerId: string) {
+  const supabase = await createClient();
+
+  try {
+    // get the speaker with the given id
+    const { data, error } = await supabase
+      .from("speakers")
+      .select("*")
+      .eq("id", speakerId)
+      .single();
 
     if (error) {
       throw error;

@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CalendarIcon, Clock, MapPin, Users } from "lucide-react";
+import { CalendarIcon, Clock, Clock10Icon, MapPin, Users } from "lucide-react";
 
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
@@ -20,11 +20,17 @@ import {
   formatDate,
   subHours,
 } from "date-fns";
+import EditSessionTime from "./edit-session-time";
+import EditSessionTitle from "./edit-session-title";
+import EditSessionDescription from "./edit-session-description";
+import SessionSpeaker from "./session-speaker";
 
 const ListConferenceSessions = async ({
   conference_id,
+  children,
 }: {
   conference_id: number;
+  children?: React.ReactNode;
 }) => {
   let conferenceSessions = await getConferenceSessions(conference_id);
 
@@ -51,59 +57,34 @@ const ListConferenceSessions = async ({
             <CardHeader className="pb-2">
               <div className="flex justify-between">
                 <div className="text-sm text-muted-foreground flex items-center">
-                  <Clock className="h-3 w-3 mr-1 text-black" />
                   {/* Calculate the session duration */}
 
                   {session.start_time && session.end_time && (
-                    <div className="block">
+                    <div className="text-sm">
                       {session.start_time} - {session.end_time}
+                      <EditSessionTime session={session} />
                     </div>
                   )}
                 </div>{" "}
-                <small>
-                  {differenceInHours(
-                    new Date(session.session_date + " " + session.end_time),
-                    new Date(session.session_date + " " + session.start_time)
-                  )}{" "}
-                  hours
-                </small>
+                <CardDescription className="flex items-center">
+                  <CalendarIcon className="h-3 w-3 mr-1 text-black" />
+                  {formatDate(session.session_date, "P")}
+                </CardDescription>
               </div>
-              <CardTitle className="line-clamp-2">{session.title}</CardTitle>
-              <CardDescription className="flex items-center text-xs">
-                <CalendarIcon className="h-3 w-3 mr-1 text-black" />
-                Start Time {session.start_time}
-              </CardDescription>
+              <CardTitle className="">
+                {session.title}
+                <EditSessionTitle session={session} />
+              </CardTitle>
             </CardHeader>
 
             <CardContent>
-              <p className="text-sm text-muted-foreground line-clamp-3">
+              <p className="text-sm text-muted-foreground">
                 {session.description || "No description provided"}
               </p>
-
-              {/* {session.speakers && session.speakers.length > 0 && (
-                <div className="mt-4">
-                  <div className="flex items-center gap-1 text-xs mb-2">
-                    <Users className="h-3 w-3" />
-                    <span className="font-semibold">Speakers</span>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {session.speakers.map((speaker) => (
-                      <Badge key={speaker.id} variant="outline">
-                        {speaker.name}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )} */}
+              <EditSessionDescription session={session} />
             </CardContent>
-
-            <CardFooter className="flex justify-end pt-2 border-t">
-              <Button variant="ghost" size="sm">
-                View Details
-              </Button>
-              <Button variant="ghost" size="sm">
-                Edit
-              </Button>
+            <CardFooter>
+              <SessionSpeaker speaker_id={session.speaker_id} />
             </CardFooter>
           </Card>
         ))}

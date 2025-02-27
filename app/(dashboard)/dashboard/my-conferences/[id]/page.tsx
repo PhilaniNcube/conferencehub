@@ -1,4 +1,8 @@
-import { getConference, getConferenceSessions, getConferenceSpeakers } from "@/utils/db/queries";
+import {
+  getConference,
+  getConferenceSessions,
+  getConferenceSpeakers,
+} from "@/utils/db/queries";
 import React from "react";
 import { ConferenceDetails } from "./_components/conference-details";
 import AddSpeakerDialog from "./_components/add-speaker";
@@ -16,15 +20,11 @@ const ConferencePage = async ({
 
   const conference = await getConference(id);
 
-  
-
   if (!conference) {
     return <div>Conference not found</div>;
   }
 
   let speakers = await getConferenceSpeakers(id);
-
-
 
   return (
     <div className="container">
@@ -39,7 +39,7 @@ const ConferencePage = async ({
           <Separator className="my-3" />
           <CreateSession conference={conference} speakers={speakers || []} />
           <Separator className="my-3" />
-          <ListConferenceSessions  conference_id={conference.id} />
+          <ListConferenceSessions conference_id={conference.id} />
         </div>
       </div>
     </div>
