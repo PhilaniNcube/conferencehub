@@ -3,6 +3,7 @@ import React from "react";
 import { ConferenceDetails } from "./_components/conference-details";
 import RegisteredAttendees from "./_components/registered-attendees";
 import ConferenceAttendees from "@/components/conference-attenndees";
+import ConferenceSessions from "@/components/conference-sessions";
 
 const ConferencePage = async ({
   params,
@@ -32,6 +33,7 @@ const ConferencePage = async ({
       </div>
       <div>
         <ConferenceAttendees conferenceId={conference.id} />
+        <ConferenceSessions conference_id={conference.id} />
       </div>
     </div>
   );
