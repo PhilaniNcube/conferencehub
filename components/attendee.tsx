@@ -6,10 +6,11 @@ const Attendee = async ({ userId }: { userId: string }) => {
 
   return (
     <div>
-      <p>
-        {profile?.first_name} {profile?.last_name} <br />
-        {profile?.email}
-      </p>
+      {profile?.first_name && profile?.last_name ? (
+        <p>
+          {profile?.first_name} {profile?.last_name} <br />
+        </p>
+      ) : null}
     </div>
   );
 };

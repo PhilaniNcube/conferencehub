@@ -37,12 +37,6 @@ export const getProfile = async () => {
 export const getUserProfile = async (userId: string) => {
   const supabase = await createClient();
 
-  // get the users email from the database
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser(userId);
-
   try {
     // get the profile of the user with the given id
     const { data, error } = await supabase
@@ -51,14 +45,11 @@ export const getUserProfile = async (userId: string) => {
       .eq("id", userId)
       .single();
 
-    if (error || userError || !data || !user) {
+    if (error || !data) {
       throw error;
     }
 
-    return {
-      ...data,
-      email: user.email,
-    };
+    return data;
   } catch (error) {
     console.error(error);
 
