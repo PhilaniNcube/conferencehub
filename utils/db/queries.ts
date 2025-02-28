@@ -283,3 +283,48 @@ export async function getSpeaker(speakerId: string) {
     return null;
   }
 }
+
+// get the conferences that a user has registered for
+export const getMyRegistrations = async () => {
+  const supabase = await createClient();
+
+  try {
+    const { data, error } = await supabase.auth.getUser();
+
+    if (error || !data) {
+      throw new Error("Error getting user");
+    }
+
+    const { user } = data;
+
+    // get the registrations of the current user
+    const { data: registrationData, error: registrationError } = await supabase
+      .from("registrations")
+      .select("*")
+      .eq("user_id", user.id);
+
+    if (registrationError) {
+      throw registrationError;
+    }
+
+    // get the conferences that the user has registered for
+    const conferenceIds = registrationData.map(
+      (registration) => registration.conference_id
+    );
+
+    const { data: conferenceData, error: conferenceError } = await supabase
+      .from("conferences")
+      .select("*")
+      .in("id", conferenceIds);
+
+    if (conferenceError) {
+      throw conferenceError;
+    }
+
+    return conferenceData;
+  } catch (error) {
+    console.error(error);
+
+    return null;
+  }
+};
