@@ -10,6 +10,7 @@ import ConferenceSpeakers from "./_components/conference-speakers";
 import CreateSession from "./_components/create-session";
 import { Separator } from "@radix-ui/react-dropdown-menu";
 import ListConferenceSessions from "./_components/list-conference-sessions";
+import ConferenceAttendees from "@/components/conference-attenndees";
 
 const ConferencePage = async ({
   params,
@@ -40,6 +41,8 @@ const ConferencePage = async ({
           <CreateSession conference={conference} speakers={speakers || []} />
           <Separator className="my-3" />
           <ListConferenceSessions conference_id={conference.id} />
+          <Separator className="my-3" />
+          <ConferenceAttendees conferenceId={conference.id} />
         </div>
       </div>
     </div>

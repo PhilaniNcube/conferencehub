@@ -33,6 +33,39 @@ export const getProfile = async () => {
   }
 };
 
+// get the profile of a user
+export const getUserProfile = async (userId: string) => {
+  const supabase = await createClient();
+
+  // get the users email from the database
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser(userId);
+
+  try {
+    // get the profile of the user with the given id
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .single();
+
+    if (error || userError || !data || !user) {
+      throw error;
+    }
+
+    return {
+      ...data,
+      email: user.email,
+    };
+  } catch (error) {
+    console.error(error);
+
+    return null;
+  }
+};
+
 // get the lists of conferences that a user has created
 export const getMyConferences = async () => {
   const supabase = await createClient();
@@ -125,6 +158,28 @@ export async function getRegisteredAttendees(conferenceId: number) {
     console.error(error);
 
     return 0;
+  }
+}
+
+export async function getConferenceAttendees(conferenceId: number) {
+  const supabase = await createClient();
+
+  try {
+    // get all registrations for the given conference
+    const { data, error } = await supabase
+      .from("registrations")
+      .select("*")
+      .eq("conference_id", conferenceId);
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error(error);
+
+    return null;
   }
 }
 
