@@ -9,14 +9,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
-import { revalidatePath } from "next/cache";
+import { useRouter } from "next/navigation";
 
 export function ImageUpload({ conference_id }: { conference_id: number }) {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const supabase = createClient();
-
+  const router = useRouter();
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       setFile(e.target.files[0]);
@@ -50,11 +50,11 @@ export function ImageUpload({ conference_id }: { conference_id: number }) {
         .eq("id", conference_id)
         .single();
 
-        if (imageUpload.error) {
-            throw new Error("Error updating conference with image url");
-        }
+      if (imageUpload.error) {
+        throw new Error("Error updating conference with image url");
+      }
 
-        setImageUrl(data.fullPath);
+      setImageUrl(data.fullPath);
 
       toast("Image uploaded successfully");
     } catch (error) {
@@ -63,7 +63,7 @@ export function ImageUpload({ conference_id }: { conference_id: number }) {
     } finally {
       setUploading(false);
       setFile(null);
-      revalidatePath(`/dashboard/my-conferences/${conference_id}`);
+      router.refresh();
     }
   };
 

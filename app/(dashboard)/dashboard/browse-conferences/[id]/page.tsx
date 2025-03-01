@@ -32,7 +32,7 @@ const ConferencePage = async ({
         </ConferenceDetails>
       </div>
       <div>
-        <ConferenceAttendees conferenceId={conference.id} />
+        {/* <ConferenceAttendees conferenceId={conference.id} /> */}
         <ConferenceSessions conference_id={conference.id} />
       </div>
     </div>

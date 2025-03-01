@@ -78,6 +78,7 @@ const ConferenceSessions = async ({
                   <CardDescription>
                     <div className="flex items-center mt-2">
                       <User className="mr-2 h-4 w-4" />
+                      <p className="text-slate-900 font-medium">Speaker: </p>
                       <ConferenceSpeakerDialog speakerId={session.speaker_id} />
                     </div>
                     <div className="flex items-center mt-1">

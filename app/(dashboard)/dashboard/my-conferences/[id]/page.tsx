@@ -37,8 +37,15 @@ const ConferencePage = async ({
           <div className="mt-6 max-w-xl w-full">
             <ConferenceSpeakers conference_id={conference.id} />
           </div>
-          <Separator className="my-3" />
-          <CreateSession conference={conference} speakers={speakers || []} />
+          {speakers && speakers.length > 0 && (
+            <>
+              <Separator className="my-3" />
+              <CreateSession
+                conference={conference}
+                speakers={speakers || []}
+              />
+            </>
+          )}
           <Separator className="my-3" />
           <ListConferenceSessions conference_id={conference.id} />
           <Separator className="my-3" />
