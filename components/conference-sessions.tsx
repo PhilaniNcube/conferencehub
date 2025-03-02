@@ -10,7 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import { Button } from "./ui/button";
 import ConferenceSpeakerDialog from "./conference-speaker-dialog";
 
 function formatTime(timeString: string): string {
