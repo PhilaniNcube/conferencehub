@@ -1,6 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { getConferences, getProfile, searchConferences } from "@/utils/db/queries";
+import {
+  getConferences,
+  getProfile,
+  searchConferences,
+} from "@/utils/db/queries";
 import { CirclePlus } from "lucide-react";
 import Link from "next/link";
 import React from "react";
@@ -15,11 +19,10 @@ type DashboardHomePageProps = {
   searchParams: Promise<SearchParams>;
 };
 
-const DashboardHomePage = async ({searchParams}:DashboardHomePageProps) => {
-
-  const {term, page, limit} = await loadSearchParams(searchParams);
-
+const DashboardHomePage = async ({ searchParams }: DashboardHomePageProps) => {
+  const { term, page, limit } = await loadSearchParams(searchParams);
   const conferencesData = searchConferences(term, page, limit);
+
   const user = getProfile();
 
   const [conferences, profile] = await Promise.all([conferencesData, user]);
@@ -27,7 +30,7 @@ const DashboardHomePage = async ({searchParams}:DashboardHomePageProps) => {
   return (
     <div>
       <div className="w-full flex justify-between items-center">
-       <SearchComponent />
+        <SearchComponent />
         <Link href="/dashboard/create-conference">
           <Button>
             <CirclePlus className="h-4 w-4" />

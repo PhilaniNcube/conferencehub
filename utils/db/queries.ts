@@ -74,7 +74,8 @@ export const getMyConferences = async () => {
     const { data: conferenceData, error: conferenceError } = await supabase
       .from("conferences")
       .select("*")
-      .eq("creator_id", user.id);
+      .eq("creator_id", user.id)
+      .order("start_date", { ascending: false });
 
     if (conferenceError) {
       throw conferenceError;
@@ -116,7 +117,10 @@ export async function getConferences() {
 
   try {
     // get all conferences
-    const { data, error } = await supabase.from("conferences").select("*");
+    const { data, error } = await supabase
+      .from("conferences")
+      .select("*")
+      .order("start_date", { ascending: false });
 
     if (error) {
       throw error;
@@ -210,7 +214,8 @@ export async function searchConferences(
         .from("conferences")
         .select("*")
         .limit(limit)
-        .range((page - 1) * limit, page * limit);
+        .range((page - 1) * limit, page * limit)
+        .order("start_date", { ascending: false });
 
       if (error) {
         throw error;
@@ -225,7 +230,8 @@ export async function searchConferences(
       .select("*")
       .textSearch("title", term)
       .limit(limit)
-      .range((page - 1) * limit, page * limit);
+      .range((page - 1) * limit, page * limit)
+      .order("start_date", { ascending: false });
 
     if (error) {
       throw error;
@@ -285,7 +291,11 @@ export async function getSpeaker(speakerId: string) {
 }
 
 // get the conferences that a user has registered for
-export const getMyRegistrations = async () => {
+export const getMyRegistrations = async (
+  term: string,
+  page: number,
+  limit: number
+) => {
   const supabase = await createClient();
 
   try {
@@ -315,7 +325,11 @@ export const getMyRegistrations = async () => {
     const { data: conferenceData, error: conferenceError } = await supabase
       .from("conferences")
       .select("*")
-      .in("id", conferenceIds);
+      .in("id", conferenceIds)
+      .ilike("title", `%${term}%`)
+      .limit(limit)
+      .range((page - 1) * limit, page * limit)
+      .order("start_date", { ascending: false });
 
     if (conferenceError) {
       throw conferenceError;
